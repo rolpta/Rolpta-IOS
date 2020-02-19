@@ -1,0 +1,20 @@
+PODS:
+  - GCDWebServer (3.5.3):
+    - GCDWebServer/Core (= 3.5.3)
+  - GCDWebServer/Core (3.5.3)
+  - SwiftLocation (4.1.0)
+  - SwiftySound (1.1.0)
+
+DEPENDENCIES:
+  - GCDWebServer (~> 3.0)
+  - SwiftLocation (~> 4.0)
+  - SwiftySound
+
+SPEC CHECKSUMS:
+  GCDWebServer: c0ab22c73e1b84f358d1e2f74bf6afd1c60829f2
+  SwiftLocation: e89dd4dbebbce1755836154103546f4ab3d92aae
+  SwiftySound: eb46cc2399cf7d94f58c372f38216e15e0a6de3e
+
+PODFILE CHECKSUM: 6326c452bc3b6e4517ba3d3969b38ce2ab6bebe9
+
+COCOAPODS: 1.4.0
