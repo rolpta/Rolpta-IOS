@@ -1,14 +1,14 @@
 //check for user
-var user_data={};
+var user_data = {};
 
-var vhash='';
+var vhash = '';
 
-var state_checked=false;
+var state_checked = false;
 
 post_authentication();
 
 //subs for applet
-var applet_subs=['prepare','init','initialize','acceptLocation','acceptQRCODE','sync','acceptPhoto','acceptGPS','render','update','next','user_info','distance'];
+var applet_subs = ['prepare', 'init', 'initialize', 'acceptLocation', 'acceptQRCODE', 'sync', 'acceptPhoto', 'acceptGPS', 'render', 'update', 'next', 'user_info', 'distance'];
 
 //toggle password
 $("body").delegate(".toggle-password", "click", function() {
@@ -30,11 +30,36 @@ $("body").delegate("[clicked]", "click", function() {
 $("body").delegate("a", "click", function() {
   link = $(this).attr('href');
 
-  if(typeof(link)=='undefined') {return true;}
+  if (typeof(link) == 'undefined') {
+    return true;
+  }
 
   //allow phone numbers
   if (link.indexOf('tel') != -1) {
-    app_bridge("dial",link);
+    return true;
+    link = link.substr(4);
+    app_bridge("dial", link);
+    return false;
+  }
+
+  if (link.indexOf('mailto') != -1) {
+    return true;
+
+    link = link.substr(7);
+    app_bridge("mail", link);
+    return false;
+  }
+
+  if (link.indexOf('popup') != -1) {
+    link = link.substr(6);
+    app_bridge("popup", link);
+    return false;
+  }
+
+
+  //any link starting with http or www
+  if (link.indexOf('http') == 0 || link.indexOf('www') == 0) {
+    app_bridge("popup", link);
     return false;
   }
 
@@ -47,25 +72,31 @@ $("body").delegate("a", "click", function() {
   //block links with #!
   hash = link.split('#')[1];
 
-  if(typeof(hash)=='undefined') {hash='';}
+  if (typeof(hash) == 'undefined') {
+    hash = '';
+  }
 
   //skip modals
   if (hash.indexOf('modal') != -1) {
     return true;
   }
 
+
   if (hash == '' || hash == '!') {
     return false;
   }
+
+
   if (hash == '!back') {
     goback();
     return false;
   }
 
-  if(hash=='user/logout') {
+  if (hash == 'user/logout') {
     logout();
     return false;
   }
+
 
 });
 
@@ -97,7 +128,7 @@ $(function() {
         return false;
 
 
-        case 'user/data':
+      case 'user/data':
         console.log(user_data);
         history.back(1);
         return false;
@@ -120,9 +151,12 @@ $(function() {
     }
 
     if (is_logged_in() && !state_checked) {
-        state_checked=true;
+      state_checked = true;
+
+      try {
         check_page_state();
-        console.log('checking page state');
+      } catch (e) {}
+      console.log('checking page state');
     }
 
 

@@ -23,30 +23,30 @@ function loadjs(url) {
     applet_setup();
 
     //integrate map
-    if(typeof(google_map)!='undefined') {
-      applet.map=google_map;
+    if (typeof(google_map) != 'undefined') {
+      applet.map = google_map;
     }
 
 
     //execute applet initialize function
-    if(typeof(applet)!='undefined' && typeof(applet.prepare)=='function') {
+    if (typeof(applet) != 'undefined' && typeof(applet.prepare) == 'function') {
       applet.prepare();
     }
 
     //execute applet initialize function
-    if(typeof(applet)!='undefined' && typeof(applet.initialize)=='function') {
+    if (typeof(applet) != 'undefined' && typeof(applet.initialize) == 'function') {
       applet.initialize();
     }
 
     //call sync if available
-    if(typeof(applet)!='undefined' && typeof(applet.sync)=='function') {
+    if (typeof(applet) != 'undefined' && typeof(applet.sync) == 'function') {
       applet.sync();
     }
 
     //applet location changed
     try {
-    location_changed();
-  } catch(e) {}
+      location_changed();
+    } catch (e) {}
 
   };
   script.onerror = function() {
@@ -64,41 +64,62 @@ function loadjs(url) {
 //setup applet with the subs
 function applet_setup() {
   for (key in applet_subs) {
-       sub=applet_subs[key];
-       if(typeof(applet[sub])=='undefined') {
-         eval('applet.'+sub+'=function() {};');
-       }
+    sub = applet_subs[key];
+    if (typeof(applet[sub]) == 'undefined') {
+      eval('applet.' + sub + '=function() {};');
+    }
   }
 }
 
 //load js once
-var loaded_js=[];
+var loaded_js = [];
+
 function loadjs_once(url) {
 
-  if(jQuery.inArray(url, loaded_js) != -1) {
-      //console.log(url+" has already been loaded");
-      return false;
+  if (jQuery.inArray(url, loaded_js) != -1) {
+    //console.log(url+" has already been loaded");
+    return false;
   }
 
-    $.ajax({
-        url: url,
-        cache: false,
-        dataType: "script",
-        success: function() {
-          loaded_js.push(url);
-          console.log("Loaded " + url+" successfully");
-        }
-      })
-      .fail(function(jqxhr, settings, exception) {
-        walert('Unable to fetch requested script ' + url);
-      });
+  $.ajax({
+      url: url,
+      cache: false,
+      dataType: "script",
+      success: function() {
+        loaded_js.push(url);
+        console.log("Loaded " + url + " successfully");
+      }
+    })
+    .fail(function(jqxhr, settings, exception) {
+      walert('Unable to fetch requested script ' + url);
+    });
 }
 
 function walert(t) {
   new MatDialog().alert(t);
 }
 
+function modalwait(message)
+{
+  opt={
+      onOverlayClick:$.unblockUI,
+       message: message,
+       css: {
+          border: 'none',
+          padding: '15px',
+          backgroundColor: '#000',
+          '-webkit-border-radius': '10px',
+          '-moz-border-radius': '10px',
+          opacity: 0.1,
+          color: '#fff'
+      } };
 
+
+    delete opt.onOverlayClick;
+
+
+  $.blockUI(opt);
+}
 
 /**
  *
@@ -126,16 +147,16 @@ if (!String.format) {
  */
 function getUrlParam(name, value) {
   var reParam = new RegExp('(?:[\?&]|&amp;)' + name + '=([^&]+)', 'i');
-
-  sack='?'+window.location.hash.split('?')[1];
-  var match = sack.match(reParam);
+  var match = window.location.search.match(reParam);
 
   return (match && match.length > 1) ? match[1] : value;
 }
 
 
 function get(name) {
-  return getUrlParam(name, '');
+  var reParam = new RegExp('(?:[\?&]|&amp;)' + name + '=([^&]+)', 'i');
+  var match = vcparams.match(reParam);
+  return (match && match.length > 1) ? match[1] : '';
 }
 
 /**
@@ -229,7 +250,7 @@ function fetch_data_bg(schema, data, cb, cbe) {
   $.ajax({
       url: api_base_url + schema,
       type: "POST",
-      headers:hdrs,
+      headers: hdrs,
       data: data,
       cache: false,
       dataType: "json",
@@ -241,13 +262,12 @@ function fetch_data_bg(schema, data, cb, cbe) {
         response = xhr.responseJSON;
         console.log(response);
 
-        if(typeof(cbe)==='function') {
+        if (typeof(cbe) === 'function') {
           cbe(schema);
         }
       }
     }).fail(function() {})
-    .always(function() {
-    });
+    .always(function() {});
 }
 
 
@@ -259,7 +279,7 @@ function fetch_data(schema, data, cb, cbe) {
       url: api_base_url + schema,
       type: "POST",
       data: data,
-      headers:hdrs,
+      headers: hdrs,
       cache: false,
       dataType: "json",
       crossDomain: true,
@@ -272,7 +292,7 @@ function fetch_data(schema, data, cb, cbe) {
 
         toasterror(xhr);
 
-        if(typeof(cbe)==='function') {
+        if (typeof(cbe) === 'function') {
           cbe(schema);
         }
 
@@ -285,14 +305,74 @@ function fetch_data(schema, data, cb, cbe) {
 
 }
 
+
+//load local data
+function load_data(schema, cb, cbe) {
+
+  lockscreen(true);
+
+  $.ajax({
+      url: json_url + schema,
+      type: "GET",
+      dataType: "json",
+      success: function(response) {
+        //console.log(response);
+        cb(response, schema);
+      },
+      error: function(xhr, status, error) {
+        response = xhr.responseJSON;
+
+        toasterror(xhr);
+
+        if (typeof(cbe) === 'function') {
+          cbe(schema);
+        }
+
+      }
+    }).fail(function() {})
+    .always(function() {
+      //unlock screen
+      $.unblockUI();
+    });
+
+}
+
+
+
+//load local data
+function load_data_bg(schema, cb, cbe) {
+
+  $.ajax({
+      url: json_url + schema,
+      type: "GET",
+      dataType: "json",
+      success: function(response) {
+        //console.log(response);
+        cb(response, schema);
+      },
+      error: function(xhr, status, error) {
+        response = xhr.responseJSON;
+
+        if (typeof(cbe) === 'function') {
+          cbe(schema);
+        }
+
+      }
+    }).fail(function() {})
+    .always(function() {
+      //unlock screen
+    });
+
+}
+
 //uses header
 function send_data(schema, data, cb, cbe) {
-  return fetch_data(schema,data,cb,cbe);
+  return fetch_data(schema, data, cb, cbe);
 }
 
 
 function send_data_bg(schema, data, cb, cbe) {
-  return fetch_data_bg(schema,data,cb,cbe);
+  return fetch_data_bg(schema, data, cb, cbe);
 }
 
 
@@ -325,20 +405,31 @@ function authorize(response) {
 
 //check if user is logged in
 function is_logged_in() {
-  if(typeof(user_data)=='undefined') {return false;}
+  if (typeof(user_data) == 'undefined') {
+    return false;
+  }
   var count = Object.keys(user_data).length;
   return count > 2 ? true : false;
 }
 
 //sync headers
 function sync_headers() {
-  if(typeof(hdrs['Authorization'])!='undefined') {
-    authcode=hdrs['Authorization'];
+  if (typeof(hdrs['Authorization']) != 'undefined') {
+    authcode = hdrs['Authorization'];
   } else {
-    authcode='';
+    authcode = '';
   }
 
-  app_bridge("authorize",authcode);
+  app_bridge("authorize", authcode);
+}
+
+function login_redirect(path) {
+  //check auth
+  if (!is_logged_in()) {
+    store.set('redirect', path);
+    redirect('user/signin');
+  }
+
 }
 
 
@@ -363,7 +454,9 @@ function logout() {
 
 
 function redirect(url) {
-  if(!url) {return false;}
+  if (!url) {
+    return false;
+  }
 
   if (url.indexOf('#') != -1) {
     url = url.split('#')[1];
@@ -423,13 +516,15 @@ function populate(form, data, enable) {
     return;
   }
 
-  first=null;
+  first = null;
 
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
-      if(first==null) {first=key;}
+      if (first == null) {
+        first = key;
+      }
       value = data[key];
-        $(form).find('#' + key).val(value).focus();
+      $(form).find('#' + key).val(value).focus();
     }
   }
 

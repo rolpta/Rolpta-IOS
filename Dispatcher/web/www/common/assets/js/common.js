@@ -57,8 +57,8 @@ function loadvc_handler(params) {
 
     if (user_data.status == 0) {
       params.vc = 'user/verify';
-    } else if (user_data.bvn == null) {
-      //params.vc = 'user/bvn';
+    } else if (user_data.bvn == null || user_data.bvn=='') {
+      params.vc = 'user/bvn';
     }
 
   }

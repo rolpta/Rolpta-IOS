@@ -27,8 +27,8 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, CLLo
     public var current_gps = ""
 
     public var authorization = ""
-    public var syncapi = "http://api.rolpta.afrk.co/profile/location"
-    
+    public var syncapi = "https://zapi.rolpta.com/profile/location"
+
     public var busy = false
     public var last_lat = 0.0
     public var last_lng = 0.0

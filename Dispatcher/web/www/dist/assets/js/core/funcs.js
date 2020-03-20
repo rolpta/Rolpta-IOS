@@ -6,9 +6,18 @@ function isNumberKey(evt) {
   return true;
 }
 
+function _url(str) {
+  return json_url+str;
+}
+
 function maxLengthCheck(object) {
   if (object.value.length > object.maxLength)
     object.value = object.value.slice(0, object.maxLength)
+}
+
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
 
 function moneyFormat(amount) {
@@ -286,7 +295,13 @@ function trackgps() {
 
 }
 
+
 //bridge fx
+
+function popup(url) {
+window.open(url);
+}
+
 function getPhoto(title) {
   $("[type=file]").remove();
 

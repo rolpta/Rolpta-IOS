@@ -15,9 +15,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.002</string>
+	<string>1.005</string>
 	<key>CFBundleVersion</key>
-	<string>10002</string>
+	<string>10005</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -28,6 +28,8 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera in order to take profile pictures</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We are requesting user auth to read GPS - ALWAYS in order to track location of user</string>
+	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We are requesting user auth to read GPS - ALWAYS in order to track location of user</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We are requesting user auth to read GPS - ONLY IN USE  in order to track location of user</string>
